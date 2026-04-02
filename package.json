@@ -1,0 +1,34 @@
+{
+  "name": "grafana-statusiq-annotations",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Grafana data source plugin that turns public StatusIQ incidents into annotations.",
+  "scripts": {
+    "build": "grafana-toolkit plugin:build",
+    "dev": "grafana-toolkit plugin:dev",
+    "test": "grafana-toolkit plugin:test",
+    "test:statusiq": "jest --testPathPattern=src/statusiq --passWithNoTests",
+    "typecheck": "tsc --noEmit",
+    "mock:statusiq": "node tools/mock-statusiq-server.mjs",
+    "kind:up": "bash scripts/kind-up.sh",
+    "kind:down": "bash scripts/kind-down.sh"
+  },
+  "dependencies": {
+    "@grafana/data": "^12.4.0",
+    "@grafana/runtime": "^12.4.0",
+    "@grafana/ui": "^12.4.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.29.0",
+    "@grafana/toolkit": "^9.5.21",
+    "@types/node": "^24.0.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "^5.9.2"
+  }
+}

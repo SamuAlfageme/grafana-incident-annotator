@@ -1,0 +1,27 @@
+{
+  "$schema": "https://raw.githubusercontent.com/grafana/grafana/main/docs/sources/developers/plugins/plugin.schema.json",
+  "type": "datasource",
+  "name": "StatusIQ Incident Annotations",
+  "id": "statusiq-incident-annotations-datasource",
+  "info": {
+    "description": "Maps public StatusIQ incident windows to Grafana annotations.",
+    "author": {
+      "name": "Your Team"
+    },
+    "keywords": ["statusiq", "incidents", "annotations"],
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "screenshots": [],
+    "updated": "2026-03-20",
+    "version": "0.1.0"
+  },
+  "dependencies": {
+    "grafanaDependency": ">=10.4.0",
+    "plugins": []
+  },
+  "annotations": true,
+  "metrics": false,
+  "backend": false
+}
