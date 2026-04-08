@@ -1,0 +1,76 @@
+{
+   "annotations": {
+      "list": [
+         {
+            "builtIn": 1,
+            "datasource": {
+               "type": "grafana",
+               "uid": "-- Grafana --"
+            },
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "type": "dashboard"
+         },
+         {
+            "datasource": {
+               "type": "statusiq-incident-annotations-datasource",
+               "uid": "statusiq-local"
+            },
+            "enable": true,
+            "hide": false,
+            "iconColor": "rgba(255, 152, 48, 1)",
+            "name": "StatusIQ incidents",
+            "target": {
+               "includeResolved": true,
+               "queryText": "",
+               "refId": "Anno"
+            }
+         }
+      ]
+   },
+   "description": "TestData Random Walk with StatusIQ incident region annotations from the plugin datasource (uid: statusiq-local).",
+   "panels": [
+      {
+         "datasource": {
+            "type": "datasource",
+            "uid": "-- Mixed --"
+         },
+         "gridPos": {
+            "h": 10,
+            "w": 24,
+            "x": 0,
+            "y": 0
+         },
+         "id": 1,
+         "pluginVersion": "v11.4.0",
+         "targets": [
+            {
+               "datasource": {
+                  "type": "datasource",
+                  "uid": "grafana"
+               },
+               "refId": "A",
+               "scenarioId": "random_walk"
+            }
+         ],
+         "title": "Random Walk",
+         "type": "timeseries"
+      }
+   ],
+   "refresh": "30s",
+   "schemaVersion": 39,
+   "tags": [
+      "statusiq",
+      "annotations",
+      "demo"
+   ],
+   "time": {
+      "from": "now-30d",
+      "to": "now"
+   },
+   "timezone": "utc",
+   "title": "StatusIQ annotations (demo)",
+   "uid": "statusiq-annotations-demo"
+}

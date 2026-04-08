@@ -24,6 +24,9 @@ fi
 echo "Building plugin bundle..."
 npm run build
 
+echo "Rendering Grafonnet dashboards (optional if jb/jsonnet installed)..."
+bash scripts/render-dashboards.sh
+
 echo "Building Grafana image with plugin..."
 docker buildx build --load -t "${GRAFANA_IMAGE}" -f deploy/kind/grafana/Dockerfile .
 

@@ -10,6 +10,7 @@
     "test:statusiq": "jest --testPathPattern=src/statusiq --passWithNoTests",
     "typecheck": "tsc --noEmit",
     "mock:statusiq": "node tools/mock-statusiq-server.mjs",
+    "dashboard:render": "bash scripts/render-dashboards.sh",
     "kind:up": "bash scripts/kind-up.sh",
     "kind:down": "bash scripts/kind-down.sh"
   },
