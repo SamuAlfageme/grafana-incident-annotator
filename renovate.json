@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:base", ":dependencyDashboard", ":semanticCommits"],
+  "extends": ["config:recommended", ":dependencyDashboard", ":semanticCommits"],
   "ignorePaths": ["**/node_modules/**"],
   "timezone": "UTC",
   "schedule": ["before 6am on monday"],
@@ -18,12 +18,17 @@
     },
     {
       "matchManagers": ["npm"],
-      "matchPackagePrefixes": ["@grafana/"],
-      "groupName": "grafana packages"
+      "groupName": "grafana packages",
+      "matchPackageNames": ["@grafana/{/,}**"]
     },
     {
       "matchManagers": ["npm"],
-      "matchPackageNames": ["react", "react-dom", "@types/react", "@types/react-dom"],
+      "matchPackageNames": [
+        "react",
+        "react-dom",
+        "@types/react",
+        "@types/react-dom"
+      ],
       "groupName": "react packages"
     },
     {
