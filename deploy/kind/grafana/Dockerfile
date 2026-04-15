@@ -1,4 +1,4 @@
-FROM grafana/grafana-oss:11.6.5
+FROM grafana/grafana-oss:13.0.0
 
 # Bundle the locally-built plugin into Grafana image
 COPY dist /var/lib/grafana/plugins/statusiq-incident-annotations-datasource
