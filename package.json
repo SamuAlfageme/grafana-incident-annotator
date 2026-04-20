@@ -15,8 +15,8 @@
     "kind:down": "bash scripts/kind-down.sh"
   },
   "dependencies": {
-    "@grafana/data": "^12.4.0",
-    "@grafana/runtime": "^12.4.0",
+    "@grafana/data": "^13.0.1",
+    "@grafana/runtime": "^13.0.1",
     "@grafana/ui": "^12.4.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
