@@ -29,7 +29,7 @@ function incidentToAnnotation(w: IncidentWindow): AnnotationEvent {
 }
 
 export class DataSource extends DataSourceApi<StatusIQQuery, StatusIQDataSourceOptions> {
-  private readonly instanceSettings: DataSourceInstanceSettings<StatusIQDataSourceOptions, StatusIQSecureOptions>;
+  private readonly instanceSettings: DataSourceInstanceSettings<StatusIQDataSourceOptions>;
   annotations = {
     QueryEditor: AnnotationQueryEditor,
     getDefaultQuery: (): Partial<StatusIQQuery> => ({
@@ -47,7 +47,7 @@ export class DataSource extends DataSourceApi<StatusIQQuery, StatusIQDataSourceO
     },
   };
 
-  constructor(instanceSettings: DataSourceInstanceSettings<StatusIQDataSourceOptions, StatusIQSecureOptions>) {
+  constructor(instanceSettings: DataSourceInstanceSettings<StatusIQDataSourceOptions>) {
     super(instanceSettings);
     this.instanceSettings = instanceSettings;
   }
@@ -162,7 +162,7 @@ export class DataSource extends DataSourceApi<StatusIQQuery, StatusIQDataSourceO
     const useZohoApi = this.instanceSettings.jsonData.useZohoApi || false;
 
     if (useZohoApi) {
-      const secureData = this.instanceSettings.secureJsonData;
+      const secureData = (this.instanceSettings as any).secureJsonData as StatusIQSecureOptions | undefined;
       const zohoAccountsBaseUrl = this.instanceSettings.jsonData.zohoAccountsBaseUrl;
       const zohoClientId = this.instanceSettings.jsonData.zohoClientId;
       const zohoClientSecret = secureData?.zohoClientSecret;
