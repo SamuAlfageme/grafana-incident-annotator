@@ -1,4 +1,4 @@
-import { DataQuery, DataSourceJsonData } from '@grafana/data';
+import { DataQuery, DataSourceJsonData, DataSourceSecureJsonData } from '@grafana/data';
 
 export interface StatusIQQuery extends DataQuery {
   queryText?: string;
@@ -11,6 +11,14 @@ export interface StatusIQDataSourceOptions extends DataSourceJsonData {
   encodedStatusPageId?: string;
   timezone?: string;
   maxPages?: number;
+  useZohoApi?: boolean;
+  zohoAccountsBaseUrl?: string;
+  zohoClientId?: string;
+}
+
+export interface StatusIQSecureOptions extends DataSourceSecureJsonData {
+  zohoClientSecret?: string;
+  zohoRefreshToken?: string;
 }
 
 export interface StatusIQIncidentOutage {
