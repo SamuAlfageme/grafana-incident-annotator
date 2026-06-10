@@ -1,0 +1,39 @@
+name: Latest Grafana API Compatibility Check
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  compatibilitycheck:
+    name: Compatibility Check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Plugin
+        run: npm run build
+
+      - name: Compatibility Check
+        uses: grafana/plugin-actions/is-compatible@is-compatible/v1.0.3
+        with:
+          module: ./src/module.ts
+          comment-pr: no
+          fail-if-incompatible: yes
