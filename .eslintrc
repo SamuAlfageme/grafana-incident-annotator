@@ -1,0 +1,10 @@
+{
+  "extends": ["@grafana/eslint-config"],
+  "root": true,
+  "ignorePatterns": ["dist", "node_modules", "coverage", "deploy"],
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  }
+}
