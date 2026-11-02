@@ -10,9 +10,10 @@ import {
   MutableDataFrame,
 } from '@grafana/data';
 import { getBackendSrv, isFetchError } from '@grafana/runtime';
-import { StatusIQDataSourceOptions, StatusIQQuery } from './types';
+import { StatusIQDataSourceOptions, StatusIQQuery, StatusIQSecureOptions } from './types';
 import { AnnotationQueryEditor } from './components/AnnotationQueryEditor';
 import { fetchIncidentWindows } from './statusiq/fetchIncidents';
+import { fetchIncidentWindowsWithZoho } from './zoho/fetchIncidentsWithZoho';
 import type { IncidentWindow } from './statusiq/types';
 import { statusHistoryApiBaseUrl, toAbsoluteUrl } from './statusiq/urls';
 import { looksLikeHtmlDocument, rejectIfHtmlPayload } from './statusiq/validateResponse';
@@ -62,18 +63,14 @@ export class DataSource extends DataSourceApi<StatusIQQuery, StatusIQDataSourceO
       const limit =
         target.limit !== undefined ? Math.max(1, Math.min(target.limit, 5000)) : undefined;
 
-      const windows = await fetchIncidentWindows({
-        configuredEncodedId: this.instanceSettings.jsonData.encodedStatusPageId,
-        timezone,
-        maxPages,
+      const windows = await this.fetchIncidents({
         fromMs: _request.range.from.valueOf(),
         toMs: _request.range.to.valueOf(),
         queryText,
         includeResolved,
         limit,
-        resolveUrl: (p) => this.resolveOutgoingUrl(p),
-        fetchText: (u) => this.getText(u),
-        fetchJson: (u) => this.getJsonUnknown(u),
+        timezone,
+        maxPages,
       });
 
       // Same frame shape for panel queries and for dashboard annotations (prepareQuery → query).
@@ -108,20 +105,18 @@ export class DataSource extends DataSourceApi<StatusIQQuery, StatusIQDataSourceO
     const tz = this.instanceSettings.jsonData.timezone || 'UTC';
 
     try {
-      await fetchIncidentWindows({
-        configuredEncodedId: this.instanceSettings.jsonData.encodedStatusPageId,
-        timezone: tz,
-        maxPages: 1,
+      await this.fetchIncidents({
         fromMs: 0,
         toMs: Date.now(),
         includeResolved: true,
-        resolveUrl: (p) => this.resolveOutgoingUrl(p),
-        fetchText: (u) => this.getText(u),
-        fetchJson: (u) => this.getJsonUnknown(u),
+        timezone: tz,
+        maxPages: 1,
       });
+
+      const apiType = this.instanceSettings.jsonData.useZohoApi ? 'Zoho OAuth API' : 'public API';
       return {
         status: 'success',
-        message: 'StatusIQ public API reached successfully.',
+        message: `StatusIQ ${apiType} reached successfully.`,
       };
     } catch (error) {
       const msg = this.errorMessage(error);
@@ -142,20 +137,76 @@ export class DataSource extends DataSourceApi<StatusIQQuery, StatusIQDataSourceO
     const timezone = this.instanceSettings.jsonData.timezone || 'UTC';
     const maxPages = this.instanceSettings.jsonData.maxPages || 5;
 
-    const windows = await fetchIncidentWindows({
-      configuredEncodedId: this.instanceSettings.jsonData.encodedStatusPageId,
-      timezone,
-      maxPages,
+    const windows = await this.fetchIncidents({
       fromMs: options.range.from.valueOf(),
       toMs: options.range.to.valueOf(),
       queryText,
       includeResolved,
+      timezone,
+      maxPages,
+    });
+
+    return windows.map(incidentToAnnotation);
+  }
+
+  private async fetchIncidents(params: {
+    fromMs: number;
+    toMs: number;
+    queryText?: string;
+    includeResolved: boolean;
+    limit?: number;
+    timezone: string;
+    maxPages: number;
+    nowMs?: number;
+  }): Promise<IncidentWindow[]> {
+    const useZohoApi = this.instanceSettings.jsonData.useZohoApi || false;
+
+    if (useZohoApi) {
+      const secureData = (this.instanceSettings as any).secureJsonData as StatusIQSecureOptions | undefined;
+      const zohoAccountsBaseUrl = this.instanceSettings.jsonData.zohoAccountsBaseUrl;
+      const zohoClientId = this.instanceSettings.jsonData.zohoClientId;
+      const zohoClientSecret = secureData?.zohoClientSecret;
+      const zohoRefreshToken = secureData?.zohoRefreshToken;
+
+      if (!zohoAccountsBaseUrl || !zohoClientId || !zohoClientSecret || !zohoRefreshToken) {
+        throw new Error(
+          'Zoho API enabled but credentials incomplete. Please configure Zoho Accounts Base URL, Client ID, Client Secret, and Refresh Token.'
+        );
+      }
+
+      return await fetchIncidentWindowsWithZoho({
+        configuredEncodedId: this.instanceSettings.jsonData.encodedStatusPageId,
+        timezone: params.timezone,
+        maxPages: params.maxPages,
+        fromMs: params.fromMs,
+        toMs: params.toMs,
+        queryText: params.queryText,
+        includeResolved: params.includeResolved,
+        limit: params.limit,
+        nowMs: params.nowMs,
+        zohoAccountsBaseUrl,
+        zohoClientId,
+        zohoClientSecret,
+        zohoRefreshToken,
+        fetchText: (u) => this.getText(u),
+        resolveUrl: (p) => this.resolveOutgoingUrl(p),
+      });
+    }
+
+    return await fetchIncidentWindows({
+      configuredEncodedId: this.instanceSettings.jsonData.encodedStatusPageId,
+      timezone: params.timezone,
+      maxPages: params.maxPages,
+      fromMs: params.fromMs,
+      toMs: params.toMs,
+      queryText: params.queryText,
+      includeResolved: params.includeResolved,
+      limit: params.limit,
+      nowMs: params.nowMs,
       resolveUrl: (p) => this.resolveOutgoingUrl(p),
       fetchText: (u) => this.getText(u),
       fetchJson: (u) => this.getJsonUnknown(u),
     });
-
-    return windows.map(incidentToAnnotation);
   }
 
   /**
